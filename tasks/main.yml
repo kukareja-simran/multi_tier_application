@@ -11,25 +11,21 @@
   register: file
 - debug:
         var: file
-
 - name: Create Secrets
-  command: "kubectl create -f /root/secret.yml"
+  shell: "kubectl create -f /root/secret.yml"
   register: secrets
 - debug:
         var: secrets
-
 - name: Create wordpress container
   shell: "kubectl create -f /root/wordpress.yml"
   register: wp
 - debug:
         var: wp
-
 - name: Create Database container
   shell: "kubectl create -f /root/sql.yml"
   register: sql
 - debug:
         var: sql
-
 - name: Exposing wordpess Deployment
   shell: "kubectl expose pod wordpress --type=NodePort --port=80"
   register: expose
