@@ -1,0 +1,46 @@
+---
+# tasks file for multi_tier_app
+- name: Copy files 
+  copy:
+          src: "{{ item }}"
+          dest: "/root/"
+  loop:
+          - secret.yml
+          - wordpress.yml
+          - sql.yml
+  register: file
+- debug:
+        var: file
+
+- name: Create Secrets
+  command: "kubectl create -f /root/secret.yml"
+  register: secrets
+- debug:
+        var: secrets
+
+- name: Create wordpress container
+  shell: "kubectl create -f /root/wordpress.yml"
+  register: wp
+- debug:
+        var: wp
+
+- name: Create Database container
+  shell: "kubectl create -f /root/sql.yml"
+  register: sql
+- debug:
+        var: sql
+
+- name: Exposing wordpess Deployment
+  shell: "kubectl expose pod wordpress --type=NodePort --port=80"
+  register: expose
+  ignore_errors: yes
+- debug:
+        var: expose.stdout_lines
+
+- name: Showing K8S Services
+  shell: "kubectl get svc"
+  register: svc
+- debug:
+    var: svc.stdout_lines
+
+
